@@ -68,3 +68,57 @@ function showEditContact(contactId) {
     // Load contact data for editing
     loadContactForEdit(contactId);
 }
+
+function getContacts() {
+    const contactList = document.getElementById('contactsList');
+    contactList.innerHTML = '<div class="loading contacts...</div>';
+
+    fetch(rootPath + "controller/get-contacts/")
+        .then(function (response){
+            return response.json();
+        })
+        .then(function (data){
+            displayContacts(data);
+        })
+        .catch(function (error){
+            contactsList.innerHTML = '<div class="error">Something went wrong, please try again later.</div>'
+        });
+}
+
+function displayContacts(contacts) {
+    const contactList = document.getElementById('contactsList');
+
+    if (!contacts || contacts.length === 0) {
+        contactsList.innerHTML = '<div class="loading">No contacts found. Add your first contact!</div>';
+        return;
+    }
+
+    let html = '<div class="contacts-grid">';
+
+    for (let i = 0; i < contacts.length; i++) {
+        const contact = contacts[i];
+
+        let avatarSrc = contact.avatar ?
+            `${rootPath}controller/uploads/${contact.avatar}` :
+            `https://ui-avatars.com/api/?name=${contact.firstname}+${contact.lastname}&background=ff6b6b&color=fff&size=120`;
+
+        html += `
+                <div class="contact-card>
+                    <img src="${avatarSrc}" alt="Avatar" class="contact-avatar">
+                    <div class="contact-name">${contact.firstname} ${contact.lastname}</div>
+                    <div class="contact-details">
+                        <P><strong>Mobile:</strong> ${contact.mobile}</p>
+                        <p><strong>Email:</strong> ${contact.email}</P>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn btn-secondary" onclick="showEditContact('${contact.id}')"> Edit</button>
+                        <button class="btn btn-danger" onclick="deleteContact('${contact.id}')"> Delete</button>
+                    </div>
+                </div>
+        `;
+    }
+
+    html += '</div>';
+    contactsList.innerHTML = html;
+}
+
