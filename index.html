@@ -27,7 +27,7 @@
                     <input type="email" id="apiKeyInput" placeholder="your-email@example.com">
                 </div>
 
-                <button class="btn" onclick="setupApiKey()">Start using Contact Book</button>
+                <button class="btn" onclick="setApiKey()">Start using Contact Book</button>
             </div>
 
             <!-- Main Contacts Page -->
@@ -38,17 +38,17 @@
                     <h2>Your Contacts</h2>
                     <div>
                         <button class="btn btn-secondary" onclick="refreshContacts()">Refresh</button>
-                        <button class="btn btn-success" onclick="showAddContact()">Add Contact</button>
+                        <button class="btn btn-success" onclick="showAddContacts()">Add Contact</button>
                     </div>
                 </div>
 
-                <div id="contactList">
+                <div id="contactsList">
                     <div class="loading">Loading contacts...</div>
                 </div>
               </div>
 
                <!-- Add Contact Page -->
-               <div id="addContactsPage" class="page">
+               <div id="addContactPage" class="page">
                 <button class="btn btn-secondary back-btn" onclick="showContacts()">Back to Contacts</button>
 
                 <h2>Add New Contact</h2>
@@ -81,10 +81,12 @@
                </div>
 
                  <!-- Edit Contact Page -->
-               <div id="editContactsPage" class="page">
+               <div id="editContactPage" class="page">
                 <button class="btn btn-secondary back-btn" onclick="showContacts()">Back to Contacts</button>
 
                 <h2>Edit Contact</h2>
+
+               <div id="editAvatarImage" style="text-align: center; margin-bottom: 20px;"></div>
 
                 <form id="editContactForm" onsubmit="updateContact(event)">
                     <input type="hidden" id="editContactId">

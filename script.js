@@ -10,13 +10,13 @@ function checkApiKey()  {
         // Show contacts page (Show page)
         showContacts();
         // Get contacts (API call)
-        getContacts()
+        getContacts();
     }
 }
 
-// Setup the API Key and store it 
+// Set the API Key and store it 
 function setApiKey() {
-    const inputApiKey = document.getElementById('apiKeyInput').ariaValueMax.trim()
+    const inputApiKey = document.getElementById('apiKeyInput').value.trim();
 
     if (!inputApiKey){
         alert('Please enter an API key!');
@@ -70,8 +70,8 @@ function showEditContact(contactId) {
 }
 
 function getContacts() {
-    const contactList = document.getElementById('contactsList');
-    contactList.innerHTML = '<div class="loading contacts...</div>';
+    const contacstList = document.getElementById('contactsList');
+    contactsList.innerHTML = '<div class="Loading contacts...</div>';
 
     fetch(rootPath + "controller/get-contacts/")
         .then(function (response){
@@ -121,4 +121,124 @@ function displayContacts(contacts) {
     html += '</div>';
     contactsList.innerHTML = html;
 }
+
+function refreshContacts() {
+    getContacts();
+}
+
+function addContact(event) {
+    event.preventDefault();
+
+    const form = new FormData(document.querySelector('#addContactForm'));
+    form.append('apiKey', apiKey);
+
+    fetch(rootPath + 'controller/insert-contact', {
+        method: 'POST',
+        headers: {'Accept': 'application/json, *.*'},
+        body: form
+    }) 
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (data){
+            if (data == "1") {
+                alert("Contact added successfully!");
+                showContacts();
+                getContacts();
+            } else {
+                alert('Error adding contact: ' + data);
+            }
+        })
+        .catch(function (error){
+            alert('Something went wrong. Please try again.');
+        });
+}
+
+function loadContactForEdit(contactId) {
+    fetch(rootPath + 'controller/get-contacts/?id=' + contactId)
+        .then(function (response){
+            return response.json();
+        })
+        .then(function(data){
+            if (data && data.length > 0) {
+                const contact = data[0];
+
+                // Show avatar if available
+                if (contact.avatar) {
+                    const avatarImg = `<img src="${rootPath}controller/uploads/${contact.avatar}"
+                                         width=200 style="border-radius: 10px;" />`;
+                    document.getElementById("editAvatarImage").innerHTML = avatarImg;
+                } else {
+                    document.getElementById("editAvatarImage").innerHTML = '';
+                }
+
+                document.getElementById('editContactId').value = contact.id;
+                document.getElementById('editFirstName').value = contact.firstname;
+                document.getElementById('editLastName').value = contact.lastname;
+                document.getElementById('editMoblie').value = contact.mobile;
+                document.getElementById('editEmail').value = contact.email;
+            }
+        })
+        .catch(function (error){
+            alert('Error loading contact details.');
+            showContacts();
+        })
+}
+
+function updateContact(event){
+    event.preventDefault();
+
+    const form = new FormData(document.querySelector("#editContactForm"));
+    const contactId = document.getElementById('editContactId').value;
+
+    form.append('apiKey', apiKey);
+    form.append('id', contactId);
+
+    fetch(rootPath + 'controller/edit-contact/', {
+        method: 'POST',
+        headers: {'Accept': 'application/json, *.*'},
+        body: form
+    })
+        .then(function (response){
+            return response.text();
+        })
+        .then(function (data){
+            if (data == "1") {
+                alert("Contact updated successfully!");
+                showContacts();
+                getContacts();
+            } else {
+                alert('Error updating contact: ' + data);
+            }
+        })
+        .catch(function (error){
+            alert('Something went wrong. please try again.');
+        });
+}
+
+function deleteContact(contactId) {
+    var confirmDelete = confirm("Delete contact. Are you sure?");
+
+    if (confirmDelete == true) {
+        fetch(rootPath + 'controller/delete-contact/?id=' + contactId)
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (data){
+                if (data == "1") {
+                    alert('Contact deleted successfully!');
+                    getContacts();
+                } else {
+                    alert('Error deleting contact: ' + data);
+                }
+            })
+            .catch(function (error){
+                alert('Something went wrong. Please try again.');
+            });
+    }
+}
+
+window.onload = function() {
+    checkApiKey();
+};
 
