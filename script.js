@@ -1,20 +1,20 @@
-// Global variables 
+// Global variables
 let apiKey = '';
 const rootPath = 'https://mysite.itvarsity.org/api/ContactBook/';
 
 // Check if API key exists when page loads
-function checkApiKey()  {
+function checkApiKey() {
     const storedApiKey = localStorage.getItem('apiKey');
     if (storedApiKey) {
         apiKey = storedApiKey;
         // Show contacts page (Show page)
         showContacts();
         // Get contacts (API call)
-        getContacts();
+        getContacts()
     }
 }
 
-// Set the API Key and store it 
+// Set the API Key and store it
 function setApiKey() {
     const inputApiKey = document.getElementById('apiKeyInput').value.trim();
 
@@ -23,31 +23,31 @@ function setApiKey() {
         return;
     }
 
-// Validate API key first
-fetch(rootPath + "controller/api-key/?apiKey=" + inputApiKey)
-    .then(function (response) {
-        return response.text();
-    })
-    .then(function (data) {
-        if (data == "1") {
-            apiKey = inputApiKey;
-            localStorage.setItem("apiKey", apiKey);
-            showContacts();
-            getContacts();
-        } else {
-            alert("Invalid API key entered!");
-        }
-    })
-    .catch(function (error) {
-        alert('Error validation your API key. Please try again.');
-    });
-} 
+    // Validate API key first
+    fetch(rootPath + "controller/api-key/?apiKey=" + inputApiKey)
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (data) {
+            if (data == "1") {
+                apiKey = inputApiKey;
+                localStorage.setItem("apiKey", apiKey);
+                showContacts();
+                getContacts();
+            } else {
+                alert("Invalid API key entered!");
+            }
+        })
+        .catch(function (error) {
+            alert('Error validation your API Key. Please try again.');
+        });
+}
 
 // Show different pages
 function showPage(pageId) {
     // Hide all pages
     const pages = document.querySelectorAll('.page');
-    pages.forEach(page => page.classList.remove('active'))
+    pages.forEach(page => page.classList.remove('active'));
 
     // Show selected page
     document.getElementById(pageId).classList.add('active');
@@ -70,8 +70,8 @@ function showEditContact(contactId) {
 }
 
 function getContacts() {
-    const contacstList = document.getElementById('contactsList');
-    contactsList.innerHTML = '<div class="Loading contacts...</div>';
+    const contactsList = document.getElementById('contactsList');
+    contactsList.innerHTML = '<div class="loading"> Loading contacts...</div>';
 
     fetch(rootPath + "controller/get-contacts/")
         .then(function (response){
@@ -86,7 +86,7 @@ function getContacts() {
 }
 
 function displayContacts(contacts) {
-    const contactList = document.getElementById('contactsList');
+    const contactsList = document.getElementById('contactsList');
 
     if (!contacts || contacts.length === 0) {
         contactsList.innerHTML = '<div class="loading">No contacts found. Add your first contact!</div>';
@@ -103,12 +103,12 @@ function displayContacts(contacts) {
             `https://ui-avatars.com/api/?name=${contact.firstname}+${contact.lastname}&background=ff6b6b&color=fff&size=120`;
 
         html += `
-                <div class="contact-card>
+                <div class="contact-card">
                     <img src="${avatarSrc}" alt="Avatar" class="contact-avatar">
                     <div class="contact-name">${contact.firstname} ${contact.lastname}</div>
                     <div class="contact-details">
-                        <P><strong>Mobile:</strong> ${contact.mobile}</p>
-                        <p><strong>Email:</strong> ${contact.email}</P>
+                        <p><strong> Mobile:</strong> ${contact.mobile}</p>
+                        <p><strong> Email:</strong> ${contact.email}</p>
                     </div>
                     <div class="contact-actions">
                         <button class="btn btn-secondary" onclick="showEditContact('${contact.id}')"> Edit</button>
@@ -132,12 +132,12 @@ function addContact(event) {
     const form = new FormData(document.querySelector('#addContactForm'));
     form.append('apiKey', apiKey);
 
-    fetch(rootPath + 'controller/insert-contact', {
+    fetch(rootPath + 'controller/insert-contact/', {
         method: 'POST',
         headers: {'Accept': 'application/json, *.*'},
         body: form
-    }) 
-        .then(function (response) {
+    })
+        .then(function (response){
             return response.text();
         })
         .then(function (data){
@@ -159,14 +159,14 @@ function loadContactForEdit(contactId) {
         .then(function (response){
             return response.json();
         })
-        .then(function(data){
+        .then(function (data){
             if (data && data.length > 0) {
                 const contact = data[0];
 
                 // Show avatar if available
                 if (contact.avatar) {
-                    const avatarImg = `<img src="${rootPath}controller/uploads/${contact.avatar}"
-                                         width=200 style="border-radius: 10px;" />`;
+                    const avatarImg = `<img src="${rootPath}controller/uploads/${contact.avatar}" 
+                                            width=200 style="border-radius: 10px;" />`;
                     document.getElementById("editAvatarImage").innerHTML = avatarImg;
                 } else {
                     document.getElementById("editAvatarImage").innerHTML = '';
@@ -175,7 +175,7 @@ function loadContactForEdit(contactId) {
                 document.getElementById('editContactId').value = contact.id;
                 document.getElementById('editFirstName').value = contact.firstname;
                 document.getElementById('editLastName').value = contact.lastname;
-                document.getElementById('editMoblie').value = contact.mobile;
+                document.getElementById('editMobile').value = contact.mobile;
                 document.getElementById('editEmail').value = contact.email;
             }
         })
@@ -212,7 +212,7 @@ function updateContact(event){
             }
         })
         .catch(function (error){
-            alert('Something went wrong. please try again.');
+            alert('Something went wrong. Please try again.');
         });
 }
 
@@ -241,4 +241,3 @@ function deleteContact(contactId) {
 window.onload = function() {
     checkApiKey();
 };
-
